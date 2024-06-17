@@ -13,7 +13,7 @@ module StripeMock
       end
 
       # post /v1/payment_methods
-      def new_payment_method(route, method_url, params, headers)
+      def new_payment_method(route, method_url, params, headers, usage)
         id = new_id('pm')
 
         ensure_payment_method_required_params(params)
@@ -31,7 +31,7 @@ module StripeMock
       # params: {:type=>"card", :customer=>"test_cus_3"}
       #
       # get /v1/payment_methods/:id
-      def get_payment_method(route, method_url, params, headers)
+      def get_payment_method(route, method_url, params, headers, usage)
         id = method_url.match(route)[1] || params[:payment_method]
         payment_method = assert_existence :payment_method, id, payment_methods[id]
 
@@ -39,7 +39,7 @@ module StripeMock
       end
 
       # get /v1/payment_methods
-      def get_payment_methods(route, method_url, params, headers)
+      def get_payment_methods(route, method_url, params, headers, usage)
         params[:offset] ||= 0
         params[:limit] ||= 10
 
@@ -53,7 +53,7 @@ module StripeMock
       end
 
       # post /v1/payment_methods/:id/attach
-      def attach_payment_method(route, method_url, params, headers)
+      def attach_payment_method(route, method_url, params, headers, usage)
         stripe_account = headers && headers[:stripe_account] || Stripe.api_key
         allowed_params = [:customer]
 
@@ -67,7 +67,7 @@ module StripeMock
       end
 
       # post /v1/payment_methods/:id/detach
-      def detach_payment_method(route, method_url, params, headers)
+      def detach_payment_method(route, method_url, params, headers, usage)
         id = method_url.match(route)[1]
 
         payment_method = assert_existence :payment_method, id, payment_methods[id]
@@ -77,7 +77,7 @@ module StripeMock
       end
 
       # post /v1/payment_methods/:id
-      def update_payment_method(route, method_url, params, headers)
+      def update_payment_method(route, method_url, params, headers, usage)
         allowed_params = [:billing_details, :card, :metadata]
         disallowed_params = params.keys - allowed_params
         unless disallowed_params.empty?

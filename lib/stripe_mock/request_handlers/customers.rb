@@ -11,7 +11,7 @@ module StripeMock
         klass.add_handler 'delete /v1/customers/([^/]*)/discount',  :delete_customer_discount
       end
 
-      def new_customer(route, method_url, params, headers)
+      def new_customer(route, method_url, params, headers, usage)
         stripe_account = headers && headers[:stripe_account] || Stripe.api_key
         params[:id] ||= new_id('cus')
         sources = []
@@ -58,7 +58,7 @@ module StripeMock
         customers[stripe_account][params[:id]]
       end
 
-      def update_customer(route, method_url, params, headers)
+      def update_customer(route, method_url, params, headers, usage)
         stripe_account = headers && headers[:stripe_account] || Stripe.api_key
         route =~ method_url
         cus = assert_existence :customer, $1, customers[stripe_account][$1]
@@ -109,7 +109,7 @@ module StripeMock
         cus
       end
 
-      def delete_customer(route, method_url, params, headers)
+      def delete_customer(route, method_url, params, headers, usage)
         stripe_account = headers && headers[:stripe_account] || Stripe.api_key
         route =~ method_url
         assert_existence :customer, $1, customers[stripe_account][$1]
@@ -120,7 +120,7 @@ module StripeMock
         }
       end
 
-      def get_customer(route, method_url, params, headers)
+      def get_customer(route, method_url, params, headers, usage)
         stripe_account = headers && headers[:stripe_account] || Stripe.api_key
         route =~ method_url
         customer = assert_existence :customer, $1, customers[stripe_account][$1]
@@ -135,12 +135,12 @@ module StripeMock
         customer
       end
 
-      def list_customers(route, method_url, params, headers)
+      def list_customers(route, method_url, params, headers, usage)
         stripe_account = headers && headers[:stripe_account] || Stripe.api_key
         Data.mock_list_object(customers[stripe_account]&.values, params)
       end
 
-      def delete_customer_discount(route, method_url, params, headers)
+      def delete_customer_discount(route, method_url, params, headers, usage)
         stripe_account = headers && headers[:stripe_account] || Stripe.api_key
         route =~ method_url
         cus = assert_existence :customer, $1, customers[stripe_account][$1]

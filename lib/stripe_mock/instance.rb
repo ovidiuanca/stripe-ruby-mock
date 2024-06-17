@@ -106,7 +106,7 @@ module StripeMock
       @base_strategy = TestStrategies::Base.new
     end
 
-    def mock_request(method, url, api_key: nil, api_base: nil, params: {}, headers: {})
+    def mock_request(method, url, api_key: nil, api_base: nil, params: {}, headers: {}, usage: [])
       return {} if method == :xtest
 
       api_key ||= (Stripe.api_key || DUMMY_API_KEY)
@@ -127,7 +127,7 @@ module StripeMock
           @error_queue.dequeue
           raise mock_error
         else
-          res = self.send(handler[:name], handler[:route], method_url, params, headers)
+          res = self.send(handler[:name], handler[:route], method_url, params, headers, usage)
           puts "           [res]  #{res}" if @debug == true
           [to_faraday_hash(res), api_key]
         end
